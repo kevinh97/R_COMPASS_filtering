@@ -199,7 +199,7 @@ combined_tbl <- ann_introns_overlap_df %>% left_join(annotated_introns_with_junc
 
 combined_tbl$intron_ID
 
-previous_SJ <-readxl::read_excel('~/Downloads/previous_studies_SJ.xlsx') %>% 
+previous_SJ <-readxl::read_excel('C:\Users\Sui He\Downloads\previous_studies_SJ.xlsx') %>% 
   #  '/Volumes/SPxDrive/COMPASS/splicing_datasets/previous_studies_SJ.xlsx') %>% 
   mutate(start = if_else(source == "Talkish et al.", start + 1, start)) %>% 
   mutate(start = if_else(source == "Gould et al.", start + 2, start)) %>%

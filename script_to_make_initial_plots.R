@@ -36,6 +36,30 @@ combined_tbl %>% group_by(sample_name) %>% tally()
 write.csv(combined_tbl, file = "/Users/chanfreaulab/Documents/combined_tbl.csv")
 combined_tbl <- read.csv(file = '/Users/chanfreaulab/Documents/combined_tbl.csv')
 
+#subset for COMPASS counts more than 100
+
+combined_tbl_counts <- subset(combined_tbl, combined_tbl$COMPASS_counts > 100)
+combine_replicates <- combined_tbl_counts %>% 
+  group_by(intron_ID, gene, sample_prefix) %>% 
+  summarize(Ave = mean(FAnS), SE = sd(FAnS)/sqrt(n())) %>% 
+  ungroup()
+rrp6 <- subset(combine_replicates, combine_replicates$sample_prefix == 'RRP6')
+upf1 <- subset(combine_replicates, combine_replicates$sample_prefix == 'UPF1')
+u_r <- subset(combine_replicates, combine_replicates$sample_prefix == 'U_R')
+rrp6$intron_ID <- gsub(" ", "_", rrp6$intron_ID)
+u_r$intron_ID <- gsub(" ", "_", u_r$intron_ID)
+upf1$intron_ID <- gsub(" ", "_", upf1$intron_ID)
+combined_tbl$intron_ID <- gsub(" ", "_", combined_tbl$intron_ID)
+combine_replicates$intron_ID <- gsub(" ", "_", combine_replicates$intron_ID)
+
+u_r$found_in_rrp6 <- ifelse(u_r$intron_ID %in% rrp6$intron_ID,"true","false")
+u_r$found_in_upf1 <- ifelse(u_r$intron_ID %in% upf1$intron_ID,"true","false")
+rrp6$found_in_u_r <- ifelse(rrp6$intron_ID %in% u_r$intron_ID,"true","false")
+upf1$found_in_u_r <- ifelse(upf1$intron_ID %in% u_r$intron_ID,"true","false")
+unique_to_u_r <- subset(u_r, u_r$found_in_upf1 == 'false')
+
+subset_rrp6_se <- subset(subset_rrp6, subset_rrp6$SE != 0)
+
 #created mean FAnS by grouping the replicates based on sample_prefix (rrp6, upf1, or u_r)
 combined_tbl$FAnS_mean <- combined_tbl %>%
   group_by(sample_prefix) %>%
@@ -62,24 +86,36 @@ u_r <- subset(combine_replicates, combine_replicates$sample_prefix == 'U_R')
 rrp6$intron_ID <- gsub(" ", "_", rrp6$intron_ID)
 u_r$intron_ID <- gsub(" ", "_", u_r$intron_ID)
 upf1$intron_ID <- gsub(" ", "_", upf1$intron_ID)
-
+combined_tbl$intron_ID <- gsub(" ", "_", combined_tbl$intron_ID)
+combine_replicates$intron_ID <- gsub(" ", "_", combine_replicates$intron_ID)
 #are the different introns found in the same dataframes?
 u_r$found_in_rrp6 <- ifelse(u_r$intron_ID %in% rrp6$intron_ID,"true","false")
 u_r$found_in_upf1 <- ifelse(u_r$intron_ID %in% upf1$intron_ID,"true","false")
-rrp6$found_in_rrp6 <- ifelse(rrp6$intron_ID %in% u_r$intron_ID,"true","false")
-upf1$found_in_upf1 <- ifelse(upf1$intron_ID %in% u_r$intron_ID,"true","false")
-subset_upf1 <- subset(upf1, upf1$found_in_upf1=='true')
-subset_rrp6 <- subset(rrp6, rrp6$found_in_rrp6=='true')
+rrp6$found_in_u_r <- ifelse(rrp6$intron_ID %in% u_r$intron_ID,"true","false")
+upf1$found_in_u_r <- ifelse(upf1$intron_ID %in% u_r$intron_ID,"true","false")
+subset_upf1 <- subset(upf1, upf1$found_in_u_r=='true')
+subset_rrp6 <- subset(rrp6, rrp6$found_in_u_r=='true')
 u_r_rrp6_common <- subset(u_r, u_r$found_in_rrp6=='true')
 
 u_r_upf1_common <- subset(u_r, u_r$found_in_upf1=='true')
 
+#FAnS greater than 1?
+u_r_FAnS <- subset(u_r, u_r$Ave >= 1)
+rrp6_FAnS <- subset(rrp6, rrp6$Ave >=1)
+upf1_FAnS <- subset(upf1, upf1$Ave >=1)
 #Plots
 ggplot() +
   geom_point(data=u_r_upf1_common, aes(x=subset_upf1$Ave, y=Ave)) + 
   geom_abline(slope=1, intercept=0) + 
   scale_x_log10() + 
   scale_y_log10() + 
+  labs(title = "FAnS comparision of UPF1∆RRP6∆ vs UPF1∆") +
+  xlab("UPF1∆ FAnS") +
+  ylab("UPF1∆RRP6∆ FAnS")
+
+ggplot() +
+  geom_point(data=u_r_upf1_common, aes(x=subset_upf1$Ave, y=Ave)) + 
+  geom_abline(slope=1, intercept=0) + 
   labs(title = "FAnS comparision of UPF1∆RRP6∆ vs UPF1∆") +
   xlab("UPF1∆ FAnS") +
   ylab("UPF1∆RRP6∆ FAnS")
