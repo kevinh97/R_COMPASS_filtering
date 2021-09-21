@@ -40,6 +40,22 @@ subset_combined_tbl <- function(combined_compass_tbl) {
           #       )
         }
       }
+      for (j in 1:length(list_tbl)){
+        matched_row <- list_tbl[[j]][list_tbl[[j]]["intron_ID"] == rownames(master_df)[i]]
+        df_name <- #somehow get the df name as a string
+        new_colnames <- #make a new charactor vector of column names which 
+        if (length(matched_row) == 103) {
+          #print(paste(rownames(master_df)[i], "in df", j))
+          master_df[i,new_colnames] <<- matched_row[52:103] #DOES THIS WORK
+          # uniques columns [52:101]
+          break
+        } else if (length(matched_row) == 0) {
+          #print(paste(rownames(master_df)[i], "not in df", j))
+          master_df[i,new_colnames] <<- NA #Does this work?
+        } else {
+          
+        }
+      }
     }
   }
 
