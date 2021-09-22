@@ -1,6 +1,8 @@
+library(dplyr)
+
 combined_tbl <- read.csv("./combined_tbl.csv")
 
-subset_combined_tbl <- function(combined_compass_tbl) {
+subset_combined_tbl <- function(combined_compass_tbl, file_output_name) {
 
   samples_vector <<- levels(combined_compass_tbl$sample_name)
   
@@ -42,24 +44,26 @@ subset_combined_tbl <- function(combined_compass_tbl) {
       }
       for (j in 1:length(list_tbl)){
         matched_row <- list_tbl[[j]][list_tbl[[j]]["intron_ID"] == rownames(master_df)[i]]
-        df_name <- #somehow get the df name as a string
-        new_colnames <- #make a new charactor vector of column names which 
+        df_name <- samples_vector[j]
+        print(paste("Checking",df_name, "for", rownames(master_df)[i]))
+        new_colnames <- paste(df_name, colnames(list_tbl[[1]][52:103]), sep = "")
+        master_df[i,new_colnames] <<- "FILLER"
         if (length(matched_row) == 103) {
-          #print(paste(rownames(master_df)[i], "in df", j))
-          master_df[i,new_colnames] <<- matched_row[52:103] #DOES THIS WORK
-          # uniques columns [52:101]
-          break
+          print(paste(rownames(master_df)[i], "in df", j))
+          master_df[i,new_colnames] <<- matched_row[52:103]
+          print("Found")
         } else if (length(matched_row) == 0) {
+          print("Not Found")
           #print(paste(rownames(master_df)[i], "not in df", j))
-          master_df[i,new_colnames] <<- NA #Does this work?
+          master_df[i,new_colnames] <<- NA
         } else {
-          
+          print("Found Multiple entries")
+          master_df[i,new_colnames] <<- "MULTI"
         }
       }
     }
+  options(scipen=10)
+  write.table(x = master_df, file = file_output_name)
   }
-
-subset_combined_tbl(combined_tbl)
-
-#rownames(master_df)[17] is in list_tbl[[1]]["intron_ID"]
-#list_tbl[[1]][list_tbl[[1]]["intron_ID"] == rownames(master_df)[17]]
+#write.table(x = master_df, file = "./merged_compass_datasets/full_upf1_rrp6")
+subset_combined_tbl(combined_tbl, "./merged_compass_datasets/full_upf1_rrp6")
