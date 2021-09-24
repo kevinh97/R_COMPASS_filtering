@@ -36,6 +36,10 @@ combined_tbl %>% group_by(sample_name) %>% tally()
 write.csv(combined_tbl, file = "/Users/chanfreaulab/Documents/combined_tbl.csv")
 combined_tbl <- read.csv(file = '/Users/chanfreaulab/Documents/combined_tbl.csv')
 
+#subset based on Compass counts over 50
+
+
+
 #created mean FAnS by grouping the replicates based on sample_prefix (rrp6, upf1, or u_r)
 combined_tbl$FAnS_mean <- combined_tbl %>%
   group_by(sample_prefix) %>%
@@ -57,7 +61,15 @@ ggplot(data = combine_replicates,aes(x = intron_ID, y = Ave)) + geom_point(aes(c
 rrp6 <- subset(combine_replicates, combine_replicates$sample_prefix == 'RRP6')
 upf1 <- subset(combine_replicates, combine_replicates$sample_prefix == 'UPF1')
 u_r <- subset(combine_replicates, combine_replicates$sample_prefix == 'U_R')
+u_r_no_0se <- subset(u_r, u_r$SE != 0)
+rrp6_no_0se <- subset(rrp6, rrp6$SE != 0)
+upf1_no_0se <- subset(upf1, upf1$SE != 0)
 
+combine_replicates_0se <- subset(combine_replicates, combine_replicates$SE != 0)
+write_csv(upf1_no_0se, "COMPASS_UPF1_introns_FAnS.csv")
+write_csv(rrp6_no_0se, "COMPASS_RRP6_introns_FAnS.csv")
+write_csv(u_r_no_0se, "COMPASS_UPF1_RRP6_introns_FAnS.csv")
+write_csv(combine_replicates_0se, "COMPASS_introns_FAnS.csv")
 #removed spaces from intron_ID
 rrp6$intron_ID <- gsub(" ", "_", rrp6$intron_ID)
 u_r$intron_ID <- gsub(" ", "_", u_r$intron_ID)
@@ -73,7 +85,8 @@ subset_rrp6 <- subset(rrp6, rrp6$found_in_rrp6=='true')
 u_r_rrp6_common <- subset(u_r, u_r$found_in_rrp6=='true')
 
 u_r_upf1_common <- subset(u_r, u_r$found_in_upf1=='true')
-
+rrp6$found_in_upf1 <- ifelse(rrp6$intron_ID %in% upf1$intron_ID,"true","false")
+rrp6_unique <- subset(rrp6, rrp6$found_in_upf1=='false')
 #Plots
 ggplot() +
   geom_point(data=u_r_upf1_common, aes(x=subset_upf1$Ave, y=Ave)) + 
