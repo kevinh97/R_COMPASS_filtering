@@ -1,0 +1,105 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+#Change the V7 formatting
+df$V7 <- gsub(" ", "_", df$V7)
+df$V7 <- paste("chr", df$V7)
+df$V7 <- str_replace_all(df$V7, fixed(" "), "")
+previous_SJ$intron_ID <- gsub(" ", "_", previous_SJ$intron_ID)
+```
+
+```{r}
+#Subset
+df$previously_reported <- ifelse(df$V7 %in% previous_SJ$intron_ID,"true","false")
+not_in_previousSJ <- subset(df, df$previously_reported == 'false')
+unannotated_introns_UR <- subset(not_in_previousSJ, not_in_previousSJ$U_R_3YPD_overlapping_annotated_intron == 'FALSE')
+no_mito <- subset(df , df$V2 != "mito")
+not_overlapping_intron <- subset(no_mito, no_mito$UPF1_3YPD_overlapping_annotated_intron != 'TRUE')
+```
+
+```{r}
+write_csv(unannotated_introns_UR, file = "unannotated_introns_list.csv")
+```
+
+```{r}
+#Make some plots
+ggplot(data = no_mito)+
+  geom_point(aes(x = as.numeric(U_R_3YPD_spliced_to_unspliced_ratio_each_sample), y = as.numeric(UPF1_3YPD_spliced_to_unspliced_ratio_each_sample), color = U_R_3YPD_overlapping_RPG_annotated_intron))+
+  scale_x_log10()+
+  scale_y_log10()+
+  #geom_hline(yintercept = 1)+
+  #geom_vline(xintercept = 1)+
+  geom_abline(slope = 1)
+```
+```{r}
+ggplot(data = not_in_previousSJ)+
+  geom_point(aes(x = as.numeric(U_R_3YPD_spliced_to_unspliced_ratio_each_sample), y = as.numeric(UPF1_3YPD_spliced_to_unspliced_ratio_each_sample), color = U_R_3YPD_overlapping_RPG_annotated_intron))+
+  scale_x_log10()+
+  scale_y_log10()+
+  labs(title = "Splice to Unspliced comparision of UPF1∆RRP6∆ vs UPF1∆") +
+  xlab("UPF1∆RRP6∆ Spliced to Unspliced") +
+  ylab("UPF1∆ Spliced to Unspliced")+
+  labs(colour = "Overlapping RPG annotated intron")+
+  geom_abline(slope = 1)
+
+ggplot(data = not_in_previousSJ)+
+  geom_point(aes(x = as.numeric(U_R_3YPD_COMPASS_counts), y = as.numeric(UPF1_3YPD_COMPASS_counts), color = U_R_3YPD_overlapping_RPG_annotated_intron))+
+  #scale_x_log10()+
+  #scale_y_log10()+
+  labs(title = "Counts comparision of UPF1∆RRP6∆ vs UPF1∆") +
+  xlab("UPF1∆RRP6∆ COMPASS counts") +
+  ylab("UPF1∆ COMPASS counts")+
+  labs(colour = "Overlapping RPG annotated intron")+
+  geom_abline(slope = 1)
+
+ggplot(data = not_in_previousSJ)+
+  geom_point(aes(x = as.numeric(U_R_3YPD_COMPASS_counts), y = as.numeric(U_R_2YPD_COMPASS_counts), color = U_R_3YPD_overlapping_RPG_annotated_intron))+
+  #scale_x_log10()+
+  #scale_y_log10()+
+  labs(title = "Counts comparision of UPF1∆RRP6∆ replicates") +
+  xlab("UPF1∆RRP6∆_3 COMPASS counts") +
+  ylab("UPF1∆RRP6∆_2 COMPASS counts")+
+  labs(colour = "Overlapping RPG annotated intron")+
+  geom_abline(slope = 1)
+
+ggplot(data = not_in_previousSJ)+
+  geom_point(aes(x = as.numeric(U_R_3YPD_COMPASS_counts), y = as.numeric(U_R_1YPD_COMPASS_counts), color = U_R_3YPD_overlapping_RPG_annotated_intron))+
+  #scale_x_log10()+
+  #scale_y_log10()+
+  labs(title = "Counts comparision of UPF1∆RRP6∆ replicates") +
+  xlab("UPF1∆RRP6∆_3 COMPASS counts") +
+  ylab("UPF1∆RRP6∆_1 COMPASS counts")+
+  labs(colour = "Overlapping RPG annotated intron")+
+  geom_abline(slope = 1)
+```
+
+```{r}
+ggplot(data = no_mito)+
+  geom_point(aes(x = as.numeric(RRP6_3YPD_spliced_to_unspliced_ratio_each_sample), y = as.numeric(UPF1_3YPD_spliced_to_unspliced_ratio_each_sample), color = U_R_3YPD_overlapping_RPG_annotated_intron))+
+  scale_x_log10()+
+  scale_y_log10()+
+  #geom_hline(yintercept = 1)+
+  #geom_vline(xintercept = 1)+
+  geom_abline(slope = 1)
+```
+
+```{r}
+combined_tbl$intron_ID <- str_replace_all(combined_tbl$intron_ID, fixed(" "), "")
+```
+
+
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
