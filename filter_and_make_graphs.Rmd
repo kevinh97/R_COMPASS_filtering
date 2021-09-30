@@ -25,19 +25,154 @@ not_overlapping_intron <- subset(no_mito, no_mito$UPF1_3YPD_overlapping_annotate
 ```
 
 ```{r}
+write_csv(df, file = "master_df.csv")
+
 write_csv(unannotated_introns_UR, file = "unannotated_introns_list.csv")
+```
+
+```{r}
+#Average spliced to unspliced ratios
+df$RRP6_1_YPD_spliced_to_unspliced_ratio<- as.numeric(df$RRP6_1_YPD_spliced_to_unspliced_ratio)
+
+df$RRP6_2YPD_spliced_to_unspliced_ratio <- as.numeric(df$RRP6_2YPD_spliced_to_unspliced_ratio)
+
+df$RRP6_3YPD_spliced_to_unspliced_ratio <- as.numeric(df$RRP6_3YPD_spliced_to_unspliced_ratio)
+
+df$UPF1_1_YPD_spliced_to_unspliced_ratio<- as.numeric(df$UPF1_1_YPD_spliced_to_unspliced_ratio)
+
+df$UPF1_2YPD_spliced_to_unspliced_ratio <- as.numeric(df$UPF1_2YPD_spliced_to_unspliced_ratio)
+
+df$UPF1_3YPD_spliced_to_unspliced_ratio <- as.numeric(df$UPF1_3YPD_spliced_to_unspliced_ratio)
+
+df$U_R_1YPD_spliced_to_unspliced_ratio<- as.numeric(df$U_R_1YPD_spliced_to_unspliced_ratio)
+
+df$U_R_2YPD_spliced_to_unspliced_ratio <- as.numeric(df$U_R_2YPD_spliced_to_unspliced_ratio)
+
+df$U_R_3YPD_spliced_to_unspliced_ratio <- as.numeric(df$U_R_3YPD_spliced_to_unspliced_ratio)
+
+df$U_R_3YPD_FAnS <- as.numeric(df$U_R_3YPD_FAnS)
+
+df$U_R_2YPD_FAnS <- as.numeric(df$U_R_2YPD_FAnS)
+
+df$U_R_1YPD_FAnS <- as.numeric(df$U_R_1YPD_FAnS)
+
+df$UPF1_3YPD_FAnS <- as.numeric(df$UPF1_3YPD_FAnS)
+
+df$UPF1_2YPD_FAnS <- as.numeric(df$UPF1_2YPD_FAnS)
+
+df$UPF1_1_YPD_FAnS <- as.numeric(df$UPF1_1_YPD_FAnS)
+
+df$RRP6_3YPD_FAnS <- as.numeric(df$RRP6_3YPD_FAnS)
+
+df$RRP6_2YPD_FAnS <- as.numeric(df$RRP6_2YPD_FAnS)
+
+df$RRP6_1_YPD_FAnS <- as.numeric(df$RRP6_1_YPD_FAnS)
+
+df$RRP6Mean_spliced_to_unspliced <- rowMeans( df[c('RRP6_1_YPD_spliced_to_unspliced_ratio', 'RRP6_2YPD_spliced_to_unspliced_ratio', 'RRP6_3YPD_spliced_to_unspliced_ratio')], na.rm = TRUE)
+
+df$UPF1Mean_spliced_to_unspliced <- rowMeans( df[c('UPF1_1_YPD_spliced_to_unspliced_ratio', 'UPF1_2YPD_spliced_to_unspliced_ratio', 'UPF1_3YPD_spliced_to_unspliced_ratio')], na.rm = TRUE)
+
+df$U_R_Mean_spliced_to_unspliced <- rowMeans( df[c('U_R_1YPD_spliced_to_unspliced_ratio', 'U_R_2YPD_spliced_to_unspliced_ratio', 'U_R_3YPD_spliced_to_unspliced_ratio')], na.rm = TRUE)
+
+df$RRP6Mean_FAnS <- rowMeans( df[c('RRP6_1_YPD_FAnS', 'RRP6_2YPD_FAnS', 'RRP6_3YPD_FAnS')], na.rm = TRUE)
+
+df$UPF1Mean_FAnS <- rowMeans( df[c('UPF1_1_YPD_FAnS', 'UPF1_2YPD_FAnS', 'UPF1_3YPD_FAnS')], na.rm = TRUE)
+
+df$U_R_Mean_FAnS <- rowMeans( df[c('U_R_1YPD_FAnS', 'U_R_2YPD_FAnS', 'U_R_3YPD_FAnS')], na.rm = TRUE)
+
+#df$ones_with_0SE <- ifelse($intron_ID %in% rrp6$intron_ID,"true","false")
+
+#df$RRP6Mean_FAnS_SE <- summarize(Ave = df$RRP6Mean_FAnS, SE = sd(RRP6Mean_FAnS)/sqrt(3))
+
+```
+
+```{r}
+#Trying to make venn diagrams to compare knockouts and replicates >.<
+combined_tbl %>% group_by(sample_prefix) %>%
+  ggVennDiagram()
+
+#ggVennDiagram(df[c('U_R_1YPD_sample_prefix', 'U_R_2YPD_sample_prefix', 'U_R_3YPD_sample_prefix')])
+```
+
+```{r}
+test_graph <- ggplot(data = df)+
+  geom_point(aes(x = as.numeric(U_R_Mean_FAnS), y = as.numeric(UPF1Mean_FAnS), color = U_R_3YPD_overlapping_RPG_annotated_intron, ... = V7))+
+  scale_x_log10()+
+  scale_y_log10()+
+    labs(title = "FAnS comparision of UPF1∆RRP6∆ vs UPF1∆") +
+  xlab("UPF1∆RRP6∆ FAnS") +
+  ylab("UPF1∆ FAnS")+
+  labs(colour = "Overlapping RPG annotated intron")+ 
+  #geom_text(aes(x = U_R_Mean_FAnS, y = UPF1Mean_FAnS ,label=df$V7), check_overlap = TRUE) +
+  #geom_hline(yintercept = 1)+
+  #geom_vline(xintercept = 1)+
+  geom_abline(slope = 1)
+
+
+ggplot(data = df)+
+  geom_point(aes(x = as.numeric(U_R_Mean_FAnS), y = as.numeric(RRP6Mean_FAnS), color = U_R_3YPD_overlapping_RPG_annotated_intron))+
+  scale_x_log10()+
+  scale_y_log10()+
+    labs(title = "FAnS comparision of UPF1∆RRP6∆ vs RRP6∆") +
+  xlab("UPF1∆RRP6∆ FAnS") +
+  ylab("RRP6∆ FAnS")+
+  labs(colour = "Overlapping RPG annotated intron")+
+  #geom_hline(yintercept = 1)+
+  #geom_vline(xintercept = 1)+
+  geom_abline(slope = 1)
+
+ggplot(data = df)+
+  geom_point(aes(x = as.numeric(RRP6Mean_FAnS), y = as.numeric(UPF1Mean_FAnS), color = U_R_3YPD_overlapping_RPG_annotated_intron))+
+  scale_x_log10()+
+  scale_y_log10()+
+    labs(title = "FAnS comparision of RRP6∆ vs UPF1∆") +
+  xlab("RRP6∆ FAnS") +
+  ylab("UPF1∆ FAnS")+
+  labs(colour = "Overlapping RPG annotated intron")+
+  #geom_hline(yintercept = 1)+
+  #geom_vline(xintercept = 1)+
+  geom_abline(slope = 1)
 ```
 
 ```{r}
 #Make some plots
 ggplot(data = no_mito)+
-  geom_point(aes(x = as.numeric(U_R_3YPD_spliced_to_unspliced_ratio_each_sample), y = as.numeric(UPF1_3YPD_spliced_to_unspliced_ratio_each_sample), color = U_R_3YPD_overlapping_RPG_annotated_intron))+
+  geom_point(aes(x = as.numeric(U_R_Mean_spliced_to_unspliced), y = as.numeric(UPF1Mean_spliced_to_unspliced), color = U_R_3YPD_overlapping_RPG_annotated_intron))+
   scale_x_log10()+
   scale_y_log10()+
+    labs(title = "Splice to Unspliced comparision of UPF1∆RRP6∆ vs UPF1∆") +
+  xlab("UPF1∆RRP6∆ Spliced to Unspliced") +
+  ylab("UPF1∆ Spliced to Unspliced")+
+  labs(colour = "Overlapping RPG annotated intron")+
+  #geom_hline(yintercept = 1)+
+  #geom_vline(xintercept = 1)+
+  geom_abline(slope = 1)
+
+ggplot(data = no_mito)+
+  geom_point(aes(x = as.numeric(U_R_Mean_spliced_to_unspliced), y = as.numeric(RRP6Mean_spliced_to_unspliced), color = U_R_3YPD_overlapping_RPG_annotated_intron))+
+  scale_x_log10()+
+  scale_y_log10()+
+    labs(title = "Splice to Unspliced comparision of UPF1∆RRP6∆ vs RRP6∆") +
+  xlab("UPF1∆RRP6∆ Spliced to Unspliced") +
+  ylab("RRP6∆ Spliced to Unspliced")+
+  labs(colour = "Overlapping RPG annotated intron")+
+  #geom_hline(yintercept = 1)+
+  #geom_vline(xintercept = 1)+
+  geom_abline(slope = 1)
+
+ggplot(data = no_mito)+
+  geom_point(aes(x = as.numeric(RRP6Mean_spliced_to_unspliced), y = as.numeric(UPF1Mean_spliced_to_unspliced), color = U_R_3YPD_overlapping_RPG_annotated_intron))+
+  scale_x_log10()+
+  scale_y_log10()+
+    labs(title = "Splice to Unspliced comparision of RRP6∆ vs UPF1∆") +
+  xlab("RRP6∆ Spliced to Unspliced") +
+  ylab("UPF1∆ Spliced to Unspliced")+
+  labs(colour = "Overlapping RPG annotated intron")+
   #geom_hline(yintercept = 1)+
   #geom_vline(xintercept = 1)+
   geom_abline(slope = 1)
 ```
+
 ```{r}
 ggplot(data = not_in_previousSJ)+
   geom_point(aes(x = as.numeric(U_R_3YPD_spliced_to_unspliced_ratio_each_sample), y = as.numeric(UPF1_3YPD_spliced_to_unspliced_ratio_each_sample), color = U_R_3YPD_overlapping_RPG_annotated_intron))+
