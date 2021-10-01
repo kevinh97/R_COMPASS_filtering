@@ -22,12 +22,16 @@ not_in_previousSJ <- subset(df, df$previously_reported == 'false')
 unannotated_introns_UR <- subset(not_in_previousSJ, not_in_previousSJ$U_R_3YPD_overlapping_annotated_intron == 'FALSE')
 no_mito <- subset(df , df$V2 != "mito")
 not_overlapping_intron <- subset(no_mito, no_mito$UPF1_3YPD_overlapping_annotated_intron != 'TRUE')
+
+only_in_U_R <- subset(not_in_previousSJ, not_in_previousSJ$UPF1_3YPD_spliced_to_unspliced_ratio_each_sample != 'NA')
 ```
 
 ```{r}
 write_csv(df, file = "master_df.csv")
 
 write_csv(unannotated_introns_UR, file = "unannotated_introns_list.csv")
+
+write_csv()
 ```
 
 ```{r}
