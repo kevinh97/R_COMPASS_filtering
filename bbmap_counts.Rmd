@@ -1,0 +1,119 @@
+
+```{r}
+library(ggplot2)
+library(plotly)
+library(gridExtra)
+library(ggpubr)
+
+df <- readRDS("master_table_UPF1_RRP6_COMPASS")
+master_table_df_thing_im_really_tired <- df
+```
+
+```{r}
+upf1rrp6_upf1_FAnS <- ggplot(data = df)+
+  geom_point(aes(x = as.numeric(U_R_Mean_FAnS), y = as.numeric(UPF1Mean_FAnS), color = U_R_3YPD_overlapping_RPG_annotated_intron, text = V7))+
+  scale_x_log10()+
+  scale_y_log10()+
+    labs(title = "FAnS comparision of UPF1∆RRP6∆ vs UPF1∆") +
+  xlab("UPF1∆RRP6∆ FAnS") +
+  ylab("UPF1∆ FAnS")+
+  labs(colour = "Overlapping RPG annotated intron")+ 
+  #geom_text(aes(x = U_R_Mean_FAnS, y = UPF1Mean_FAnS ,label=df$V7), check_overlap = TRUE) +
+  geom_hline(yintercept = 1)+
+  geom_vline(xintercept = 1)+
+  geom_abline(slope = 1)
+
+ggplotly(upf1rrp6_upf1_FAnS)
+
+text_plot_upf1rrp6_upf1_FAnS <- ggparagraph(
+  text = 
+"There are 4 points with a > 1 FAnS score. These could be worth looking into if they are not already annotated. The 4 points are: chrX_469184_469405_-, chrXIII_211441_211570_- ,chrXI_93303_93465_-, chrXI_93367_93465_-
+The last 2 share the same 3'ss.
+
+This plot currently shows the mean FAnS score. It could be worth calculating p-values for the FAnS scores.
+
+I'm suprised that there are any points which have higher FAnS scores in upf1∆ than in upf1∆rrp6∆. I'm curious what those are."
+)
+
+
+grid.arrange(upf1rrp6_upf1_FAnS,text_plot_upf1rrp6_upf1_FAnS)
+```
+
+bbmap counts
+```{r}
+UR_bbmap_df <- as.data.frame(as.numeric(df[,c("U_R_1YPD_bbmap_counts")]))
+UR_bbmap_df$rep2 <- as.numeric(df[,c("U_R_2YPD_bbmap_counts")])
+UR_bbmap_df$rep3 <- as.numeric(df[,c("U_R_3YPD_bbmap_counts")])
+bbmap_counts_U_R_mean <- rowMeans(UR_bbmap_df)
+bbmap_counts_U_R_mean[is.na(bbmap_counts_U_R_mean)] <- 0
+
+U_bbmap_df <- as.data.frame(as.numeric(df[,c("UPF1_1_YPD_bbmap_counts")]))
+U_bbmap_df$rep2 <- as.numeric(df[,c("UPF1_2YPD_bbmap_counts")])
+U_bbmap_df$rep3 <- as.numeric(df[,c("UPF1_3YPD_bbmap_counts")])
+bbmap_counts_U_mean <- rowMeans(U_bbmap_df)
+bbmap_counts_U_mean[is.na(bbmap_counts_U_mean)] <- 0
+
+R_bbmap_df <- as.data.frame(as.numeric(df[,c("RRP6_1_YPD_bbmap_counts")]))
+R_bbmap_df$rep2 <- as.numeric(df[,c("RRP6_2YPD_bbmap_counts")])
+R_bbmap_df$rep3 <- as.numeric(df[,c("RRP6_3YPD_bbmap_counts")])
+bbmap_counts_R_mean <- rowMeans(R_bbmap_df)
+bbmap_counts_R_mean[is.na(bbmap_counts_R_mean)] <- 0
+
+master_table_df_thing_im_really_tired$bbmap_counts_U_R_mean <-bbmap_counts_U_R_mean
+master_table_df_thing_im_really_tired$bbmap_counts_U_mean <- bbmap_counts_U_mean
+master_table_df_thing_im_really_tired$bbmap_counts_R_mean <- bbmap_counts_R_mean
+
+only_NA_master_table_df_thing_im_really_tired <- master_table_df_thing_im_really_tired[(is.na(master_table_df_thing_im_really_tired$RRP6Mean_FAnS) | is.na(master_table_df_thing_im_really_tired$UPF1Mean_FAnS) | is.na(master_table_df_thing_im_really_tired$U_R_Mean_FAnS)),]
+
+plot_bbmap_means <- function(df) {
+  upf1rrp6_upf1_bbmap <- ggplot(data = df)+
+  geom_point(aes(x = bbmap_counts_U_R_mean, y = bbmap_counts_U_mean, color = U_R_3YPD_overlapping_RPG_annotated_intron, text = V7))+
+  scale_x_continuous(trans = "log2")+
+  scale_y_continuous(trans = "log2")+
+  labs(title = "BBmap counts comparision of UPF1∆RRP6∆ vs UPF1∆") +
+  xlab("UPF1∆RRP6∆ bbmap counts") +
+  ylab("UPF1∆ bbmap counts")+
+  labs(colour = "Overlapping RPG annotated intron")+ 
+  #geom_text(aes(x = U_R_Mean_FAnS, y = UPF1Mean_FAnS ,label=df$V7), check_overlap = TRUE) +
+  geom_hline(yintercept = 1)+
+  geom_vline(xintercept = 1)+
+  geom_abline(slope = 1)
+
+  return(upf1rrp6_upf1_bbmap)
+}
+
+plot_bbmap_means(only_NA_master_table_df_thing_im_really_tired)
+bbmap_text <-  ggparagraph(
+  text = "This is a plot of the bbmap counts for"
+)
+
+```
+
+```{r}
+ggplot(data = df)+
+  geom_point(aes(x = as.numeric(U_R_Mean_FAnS), y = as.numeric(RRP6Mean_FAnS), color = U_R_3YPD_overlapping_RPG_annotated_intron))+
+  scale_x_log10()+
+  scale_y_log10()+
+    labs(title = "FAnS comparision of UPF1∆RRP6∆ vs RRP6∆") +
+  xlab("UPF1∆RRP6∆ FAnS") +
+  ylab("RRP6∆ FAnS")+
+  labs(colour = "Overlapping RPG annotated intron")+
+  #geom_hline(yintercept = 1)+
+  #geom_vline(xintercept = 1)+
+  geom_abline(slope = 1)
+```
+
+```{r}
+ggplot(data = df)+
+  geom_point(aes(x = as.numeric(RRP6Mean_FAnS), y = as.numeric(UPF1Mean_FAnS), color = U_R_3YPD_overlapping_RPG_annotated_intron))+
+  scale_x_log10()+
+  scale_y_log10()+
+    labs(title = "FAnS comparision of RRP6∆ vs UPF1∆") +
+  xlab("RRP6∆ FAnS") +
+  ylab("UPF1∆ FAnS")+
+  labs(colour = "Overlapping RPG annotated intron")+
+  #geom_hline(yintercept = 1)+
+  #geom_vline(xintercept = 1)+
+  geom_abline(slope = 1)
+```
+

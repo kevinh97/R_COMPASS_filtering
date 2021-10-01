@@ -6,6 +6,15 @@ output: html_notebook
 This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
 
 Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+```{r, startup}
+library(stringr)
+library(ggplot2)
+
+df <- readRDS("master_table_UPF1_RRP6_COMPASS")
+previous_SJ <- readRDS("previous_SJ")
+```
+
+
 
 ```{r}
 #Change the V7 formatting
@@ -100,7 +109,7 @@ combined_tbl %>% group_by(sample_prefix) %>%
 
 ```{r}
 test_graph <- ggplot(data = df)+
-  geom_point(aes(x = as.numeric(U_R_Mean_FAnS), y = as.numeric(UPF1Mean_FAnS), color = U_R_3YPD_overlapping_RPG_annotated_intron, ... = V7))+
+  geom_point(aes(x = as.numeric(U_R_Mean_FAnS), y = as.numeric(UPF1Mean_FAnS), color = U_R_3YPD_overlapping_RPG_annotated_intron))+
   scale_x_log10()+
   scale_y_log10()+
     labs(title = "FAnS comparision of UPF1∆RRP6∆ vs UPF1∆") +
