@@ -9,7 +9,7 @@ library(plotly)
 ```
 
 ```{r}
-df <- read.delim(file = "/Users/chanfreaulab/Documents/GitHub/R_COMPASS_filtering/R_COMPASS_filtering/merged_compass_datasets/full_upf1_rrp6", sep = "" ,header = TRUE, stringsAsFactors = FALSE)
+df <- read.delim(file = "/Users/chanfreaulab/Documents/GitHub/R_COMPASS_filtering/merged_compass_datasets/full_upf1_rrp6", sep = "" ,header = TRUE, stringsAsFactors = FALSE)
 df$U_R_1YPD_spliced_to_unspliced_ratio <- as.numeric(df$U_R_1YPD_spliced_to_unspliced_ratio)
 df$U_R_1YPD_spliced_to_unspliced_ratio[is.na(df$U_R_1YPD_spliced_to_unspliced_ratio)] <- 0
 
@@ -30,9 +30,10 @@ bbmap_plot <- ggplot(data = df)+
   geom_point(aes(x = U_R_1YPD_bbmap_counts, y = UPF1_1_YPD_bbmap_counts, color = V37))+
   scale_x_log10()+
   scale_y_log10()+
-  geom_hline(yintercept = 1)+
-  geom_vline(xintercept = 1)+
-  geom_abline(slope = 1)
+  geom_abline(slope = 1)+
+  xlab(label = "upf1∆ rrp6∆ bbmap counts")+
+  ylab(label = "rrp6∆ bbmap counts")+
+  ggtitle("bbmap counts for upf1∆ rrp6∆ vs rrp6∆", subtitle = "Color: Has YTRAY branch point?")
 ```
 
 ```{r}
@@ -40,9 +41,10 @@ ggplot(data = df)+
   geom_point(aes(x = U_R_1YPD_bbmap_counts, y = U_R_1YPD_HISAT2_default_counts, color = V37))+
   scale_x_log10()+
   scale_y_log10()+
-  geom_hline(yintercept = 1)+
-  geom_vline(xintercept = 1)+
-  geom_abline(slope = 1)
+  geom_abline(slope = 1)+
+  xlab(label = "upf1∆ rrp6∆ bbmap counts")+
+  ylab(label = "upf1∆ rrp6∆ HISAT2 counts")+
+  ggtitle("bbmap vs HISAT for upf1∆ rrp6∆")
 ```
 
 ```{r}
