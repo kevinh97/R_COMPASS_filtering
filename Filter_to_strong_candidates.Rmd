@@ -1,0 +1,99 @@
+---
+title: "threshold_subsetting"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library("ggplot2")
+library("plotly")
+#full_list <- readRDS("master_table_UPF1_RRP6_COMPASS")
+full_list <- readRDS("master_df_COMPASS")
+
+full_list$V4 <- as.numeric(full_list$V4)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+chr_plot <- function(df){
+chr_ggplot <- ggplot(data = df)+
+  geom_point(aes(x = as.numeric(V2), y = V1, color = V1, text = V6))+
+  labs(title = "Alternate splicing events across the S.Cere genomes") +
+  xlab("Start position") +
+  ylab("Chromosome")+
+  theme(legend.position = "none")
+
+return(chr_ggplot)
+}
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+chr_plot(full_list)
+
+remove_annotated <- subset(full_list, (full_list[,7] == FALSE))
+
+chr_plot(remove_annotated)
+
+remove_short <- subset(remove_annotated, remove_annotated$V4 > 500)
+
+removed_short_introns <- chr_plot(remove_short)
+
+# ggplot(data = remove_short)+
+#   geom_point(aes(x = , y = V2, color = V2))+
+#   labs(title = "Alternate splicing events across the S.Cere genomes") +
+#   xlab("Start position") +
+#   ylab("Chromosome")+
+#   theme(legend.position = "none")
+
+synergistic_intron <-subset(remove_short, )
+```
+
+```{r}
+ggplotly(removed_short_introns)
+```
+```{r}
+remove_short$WT_1_YPD_HISAT2_default_counts <- as.numeric(remove_short$WT_1_YPD_HISAT2_default_counts)
+remove_short$WT_2YPD_HISAT2_default_counts <- as.numeric(remove_short$WT_2YPD_HISAT2_default_counts)
+remove_short$WT_3YPD_HISAT2_default_counts <- as.numeric(remove_short$WT_3YPD_HISAT2_default_counts)
+remove_short$U_R_1YPD_HISAT2_default_counts <- as.numeric(remove_short$U_R_1YPD_HISAT2_default_counts)
+remove_short$U_R_2YPD_HISAT2_default_counts <- as.numeric(remove_short$U_R_2YPD_HISAT2_default_counts)
+remove_short$U_R_3YPD_HISAT2_default_counts <- as.numeric(remove_short$U_R_3YPD_HISAT2_default_counts)
+
+remove_short$WTMean_hisat2_count <- rowMeans( remove_short[c('WT_1_YPD_HISAT2_default_counts', 'WT_2YPD_HISAT2_default_counts', 'WT_3YPD_HISAT2_default_counts')], na.rm = TRUE)
+remove_short$U_RMEAN_hisat2_count <- rowMeans( remove_short[c('U_R_1YPD_HISAT2_default_counts', 'U_R_2YPD_HISAT2_default_counts', 'U_R_3YPD_HISAT2_default_counts')], na.rm = TRUE)
+
+remove_short$WT_ur_mean_hisat2_count <- remove_short$WTMean_hisat2_count/remove_short$U_RMEAN_hisat2_count
+
+remove_short_0na <- as.data.frame(as.numeric(remove_short[,c("WT_ur_mean_hisat2_count")]))
+remove_short[is.na(remove_short$WT_ur_mean_hisat2_count), "WT_ur_mean_hisat2_count"] <- 0
+
+hist(remove_short$WT_ur_mean_hisat2_count)
+
+remove_short_0wt <- subset(remove_short, remove_short$WT_ur_mean_hisat2_count == 0)
+chr_plot(remove_short_0wt)
+
+remove_short$RRP6_1_YPD_HISAT2_default_counts <- as.numeric(remove_short$RRP6_1_YPD_HISAT2_default_counts)
+remove_short$RRP6_2YPD_HISAT2_default_counts <- as.numeric(remove_short$RRP6_2YPD_HISAT2_default_counts)
+remove_short$RRP6_3YPD_HISAT2_default_counts <- as.numeric(remove_short$RRP6_3YPD_HISAT2_default_counts)
+
+remove_short$RRP6MEAN_hisat2_count <- rowMeans( remove_short[c('RRP6_1_YPD_HISAT2_default_counts', 'RRP6_2YPD_HISAT2_default_counts', 'RRP6_3YPD_HISAT2_default_counts')], na.rm = TRUE)
+
+remove_short$WT_rrp6_mean_hisat2_count <- remove_short$WTMean_hisat2_count/remove_short$RRP6MEAN_hisat2_count
+
+remove_short[is.na(remove_short$WT_rrp6_mean_hisat2_count), "WT_rrp6_mean_hisat2_count"] <- 0
+
+remove_short_0wt <- subset(remove_short, remove_short$WT_ur_mean_hisat2_count == 0)
+remove_short_0wt <- subset(remove_short_0wt, remove_short_0wt$WT_rrp6_mean_hisat2_count == 0)
+
+remove_short_0wt[is.na(remove_short_0wt$wt_to_u_r_spliced_unspliced), "wt_to_u_r_spliced_unspliced"] <- 0
+
+```
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

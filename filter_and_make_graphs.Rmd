@@ -6,27 +6,19 @@ output: html_notebook
 This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
 
 Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
-```{r, startup}
-library(stringr)
-library(ggplot2)
-
-df <- readRDS("master_table_UPF1_RRP6_COMPASS")
-previous_SJ <- readRDS("previous_SJ")
-```
-
-
 
 ```{r}
 #Change the V7 formatting
-df$V7 <- gsub(" ", "_", df$V7)
-df$V7 <- paste("chr", df$V7)
-df$V7 <- str_replace_all(df$V7, fixed(" "), "")
+df <- master_df
+df$V6 <- gsub(" ", "_", df$V6)
+df$V6 <- paste("chr", df$V6)
+df$V6 <- str_replace_all(df$V6, fixed(" "), "")
 previous_SJ$intron_ID <- gsub(" ", "_", previous_SJ$intron_ID)
 ```
 
 ```{r}
 #Subset
-df$previously_reported <- ifelse(df$V7 %in% previous_SJ$intron_ID,"true","false")
+df$previously_reported <- ifelse(df$V6 %in% previous_SJ$intron_ID,"true","false")
 not_in_previousSJ <- subset(df, df$previously_reported == 'false')
 unannotated_introns_UR <- subset(not_in_previousSJ, not_in_previousSJ$U_R_3YPD_overlapping_annotated_intron == 'FALSE')
 no_mito <- subset(df , df$V2 != "mito")
@@ -40,28 +32,40 @@ write_csv(df, file = "master_df.csv")
 
 write_csv(unannotated_introns_UR, file = "unannotated_introns_list.csv")
 
-write_csv()
+write_csv(not_in_previousSJ, file = 'not_in_previousSJ.csv')
 ```
 
 ```{r}
 #Average spliced to unspliced ratios
-df$RRP6_1_YPD_spliced_to_unspliced_ratio<- as.numeric(df$RRP6_1_YPD_spliced_to_unspliced_ratio)
+df$RRP6_1_YPD_spliced_to_unspliced_ratio_each_sample<- as.numeric(df$RRP6_1_YPD_spliced_to_unspliced_ratio_each_sample)
 
-df$RRP6_2YPD_spliced_to_unspliced_ratio <- as.numeric(df$RRP6_2YPD_spliced_to_unspliced_ratio)
+df$RRP6_2YPD_spliced_to_unspliced_ratio_each_sample <- as.numeric(df$RRP6_2YPD_spliced_to_unspliced_ratio_each_sample)
 
-df$RRP6_3YPD_spliced_to_unspliced_ratio <- as.numeric(df$RRP6_3YPD_spliced_to_unspliced_ratio)
+df$RRP6_3YPD_spliced_to_unspliced_ratio_each_sample <- as.numeric(df$RRP6_3YPD_spliced_to_unspliced_ratio_each_sample)
 
-df$UPF1_1_YPD_spliced_to_unspliced_ratio<- as.numeric(df$UPF1_1_YPD_spliced_to_unspliced_ratio)
+df$UPF1_1_YPD_spliced_to_unspliced_ratio_each_sample <- as.numeric(df$UPF1_1_YPD_spliced_to_unspliced_ratio_each_sample)
 
-df$UPF1_2YPD_spliced_to_unspliced_ratio <- as.numeric(df$UPF1_2YPD_spliced_to_unspliced_ratio)
+df$UPF1_2YPD_spliced_to_unspliced_ratio_each_sample <- as.numeric(df$UPF1_2YPD_spliced_to_unspliced_ratio_each_sample)
 
-df$UPF1_3YPD_spliced_to_unspliced_ratio <- as.numeric(df$UPF1_3YPD_spliced_to_unspliced_ratio)
+df$UPF1_3YPD_spliced_to_unspliced_ratio_each_sample <- as.numeric(df$UPF1_3YPD_spliced_to_unspliced_ratio_each_sample)
 
-df$U_R_1YPD_spliced_to_unspliced_ratio<- as.numeric(df$U_R_1YPD_spliced_to_unspliced_ratio)
+df$U_R_1YPD_spliced_to_unspliced_ratio_each_sample <- as.numeric(df$U_R_1YPD_spliced_to_unspliced_ratio_each_sample)
 
-df$U_R_2YPD_spliced_to_unspliced_ratio <- as.numeric(df$U_R_2YPD_spliced_to_unspliced_ratio)
+df$U_R_2YPD_spliced_to_unspliced_ratio_each_sample <- as.numeric(df$U_R_2YPD_spliced_to_unspliced_ratio_each_sample)
 
-df$U_R_3YPD_spliced_to_unspliced_ratio <- as.numeric(df$U_R_3YPD_spliced_to_unspliced_ratio)
+df$U_R_3YPD_spliced_to_unspliced_ratio_each_sample <- as.numeric(df$U_R_3YPD_spliced_to_unspliced_ratio_each_sample)
+
+df$WT_1_YPD_spliced_to_unspliced_ratio_each_sample <- as.numeric(df$WT_1_YPD_spliced_to_unspliced_ratio_each_sample)
+
+df$WT_2YPD_spliced_to_unspliced_ratio_each_sample <- as.numeric(df$WT_2YPD_spliced_to_unspliced_ratio_each_sample)
+
+df$WT_3YPD_spliced_to_unspliced_ratio_each_sample <- as.numeric(df$WT_3YPD_spliced_to_unspliced_ratio_each_sample)
+
+df$WT_1_YPD_FAnS <- as.numeric(df$WT_1_YPD_FAnS)
+
+df$WT_2YPD_FAnS <- as.numeric(df$WT_2YPD_FAnS)
+
+df$WT_3YPD_FAnS <- as.numeric(df$WT_3YPD_FAnS)
 
 df$U_R_3YPD_FAnS <- as.numeric(df$U_R_3YPD_FAnS)
 
@@ -81,17 +85,21 @@ df$RRP6_2YPD_FAnS <- as.numeric(df$RRP6_2YPD_FAnS)
 
 df$RRP6_1_YPD_FAnS <- as.numeric(df$RRP6_1_YPD_FAnS)
 
-df$RRP6Mean_spliced_to_unspliced <- rowMeans( df[c('RRP6_1_YPD_spliced_to_unspliced_ratio', 'RRP6_2YPD_spliced_to_unspliced_ratio', 'RRP6_3YPD_spliced_to_unspliced_ratio')], na.rm = TRUE)
+df$RRP6Mean_spliced_to_unspliced <- rowMeans( df[c('RRP6_1_YPD_spliced_to_unspliced_ratio_each_sample', 'RRP6_2YPD_spliced_to_unspliced_ratio_each_sample', 'RRP6_3YPD_spliced_to_unspliced_ratio_each_sample')], na.rm = TRUE)
 
-df$UPF1Mean_spliced_to_unspliced <- rowMeans( df[c('UPF1_1_YPD_spliced_to_unspliced_ratio', 'UPF1_2YPD_spliced_to_unspliced_ratio', 'UPF1_3YPD_spliced_to_unspliced_ratio')], na.rm = TRUE)
+df$UPF1Mean_spliced_to_unspliced <- rowMeans( df[c('UPF1_1_YPD_spliced_to_unspliced_ratio_each_sample', 'UPF1_2YPD_spliced_to_unspliced_ratio_each_sample', 'UPF1_3YPD_spliced_to_unspliced_ratio_each_sample')], na.rm = TRUE)
 
-df$U_R_Mean_spliced_to_unspliced <- rowMeans( df[c('U_R_1YPD_spliced_to_unspliced_ratio', 'U_R_2YPD_spliced_to_unspliced_ratio', 'U_R_3YPD_spliced_to_unspliced_ratio')], na.rm = TRUE)
+df$U_R_Mean_spliced_to_unspliced <- rowMeans( df[c('U_R_1YPD_spliced_to_unspliced_ratio_each_sample', 'U_R_2YPD_spliced_to_unspliced_ratio_each_sample', 'U_R_3YPD_spliced_to_unspliced_ratio_each_sample')], na.rm = TRUE)
+
+df$WTMean_spliced_to_unspliced <- rowMeans( df[c('WT_1_YPD_spliced_to_unspliced_ratio_each_sample', 'WT_2YPD_spliced_to_unspliced_ratio_each_sample', 'WT_3YPD_spliced_to_unspliced_ratio_each_sample')], na.rm = TRUE)
 
 df$RRP6Mean_FAnS <- rowMeans( df[c('RRP6_1_YPD_FAnS', 'RRP6_2YPD_FAnS', 'RRP6_3YPD_FAnS')], na.rm = TRUE)
 
 df$UPF1Mean_FAnS <- rowMeans( df[c('UPF1_1_YPD_FAnS', 'UPF1_2YPD_FAnS', 'UPF1_3YPD_FAnS')], na.rm = TRUE)
 
 df$U_R_Mean_FAnS <- rowMeans( df[c('U_R_1YPD_FAnS', 'U_R_2YPD_FAnS', 'U_R_3YPD_FAnS')], na.rm = TRUE)
+
+df$WT_Mean_FAnS <- rowMeans( df[c('WT_1_YPD_FAnS', 'WT_2YPD_FAnS', 'WT_3YPD_FAnS')], na.rm = TRUE)
 
 #df$ones_with_0SE <- ifelse($intron_ID %in% rrp6$intron_ID,"true","false")
 
@@ -109,7 +117,7 @@ combined_tbl %>% group_by(sample_prefix) %>%
 
 ```{r}
 test_graph <- ggplot(data = df)+
-  geom_point(aes(x = as.numeric(U_R_Mean_FAnS), y = as.numeric(UPF1Mean_FAnS), color = U_R_3YPD_overlapping_RPG_annotated_intron))+
+  geom_point(aes(x = as.numeric(U_R_Mean_FAnS), y = as.numeric(UPF1Mean_FAnS), color = U_R_3YPD_overlapping_RPG_annotated_intron, ... = V7))+
   scale_x_log10()+
   scale_y_log10()+
     labs(title = "FAnS comparision of UPF1∆RRP6∆ vs UPF1∆") +
@@ -122,8 +130,8 @@ test_graph <- ggplot(data = df)+
   geom_abline(slope = 1)
 
 
-ggplot(data = df)+
-  geom_point(aes(x = as.numeric(U_R_Mean_FAnS), y = as.numeric(RRP6Mean_FAnS), color = U_R_3YPD_overlapping_RPG_annotated_intron))+
+test_graph1 <- ggplot(data = df)+
+  geom_point(aes(x = as.numeric(U_R_Mean_FAnS), y = as.numeric(RRP6Mean_FAnS), color = U_R_3YPD_overlapping_RPG_annotated_intron, ... = V7))+
   scale_x_log10()+
   scale_y_log10()+
     labs(title = "FAnS comparision of UPF1∆RRP6∆ vs RRP6∆") +
@@ -134,10 +142,10 @@ ggplot(data = df)+
   #geom_vline(xintercept = 1)+
   geom_abline(slope = 1)
 
-ggplot(data = df)+
-  geom_point(aes(x = as.numeric(RRP6Mean_FAnS), y = as.numeric(UPF1Mean_FAnS), color = U_R_3YPD_overlapping_RPG_annotated_intron))+
-  scale_x_log10()+
-  scale_y_log10()+
+test_graph2 <- ggplot(data = df)+
+  geom_point(aes(x = as.numeric(RRP6Mean_FAnS), y = as.numeric(UPF1Mean_FAnS), color = U_R_3YPD_overlapping_RPG_annotated_intron, ... = V7))+
+  #scale_x_log10()+
+  #scale_y_log10()+
     labs(title = "FAnS comparision of RRP6∆ vs UPF1∆") +
   xlab("RRP6∆ FAnS") +
   ylab("UPF1∆ FAnS")+
@@ -242,9 +250,34 @@ ggplot(data = no_mito)+
 combined_tbl$intron_ID <- str_replace_all(combined_tbl$intron_ID, fixed(" "), "")
 ```
 
-
+```{r}
+df$wt_to_rrp6_spliced_unspliced <- df$WTMean_spliced_to_unspliced/df$RRP6Mean_spliced_to_unspliced
+df$wt_to_upf1_spliced_unspliced <- df$WTMean_spliced_to_unspliced/df$UPF1Mean_spliced_to_unspliced
+df$wt_to_u_r_spliced_unspliced <- df$WTMean_spliced_to_unspliced/df$U_R_Mean_spliced_to_unspliced
+df$upf1_synergy <- df$wt_to_rrp6_spliced_unspliced * df$wt_to_upf1_spliced_unspliced
 ```
 
+```{r}
+ggplot(data = df)+
+  geom_point(aes(x = as.numeric(wt_to_u_r_spliced_unspliced), y = as.numeric(upf1_synergy), color = U_R_3YPD_overlapping_RPG_annotated_intron))+
+  scale_x_log10()+
+  scale_y_log10()+
+  labs(title = "Possible synergy?") +
+  xlab("Observed Effect of UPF1∆RRP6∆") +
+  ylab("Predicted effect of UPF1∆RRP6∆")+
+  labs(colour = "Overlapping RPG annotated intron")+
+  geom_abline(slope = 1)
+
+synergy_test <- ggplot(data = df)+
+  geom_point(aes(x = as.numeric(wt_to_u_r_spliced_unspliced), y = as.numeric(upf1_synergy), color = U_R_3YPD_overlapping_RPG_annotated_intron, ... = V6))+
+  scale_x_log10()+
+  scale_y_log10()+
+  labs(title = "Possible synergy?") +
+  xlab("Observed Effect of UPF1∆RRP6∆") +
+  ylab("Predicted effect of UPF1∆RRP6∆")+
+  labs(colour = "Overlapping RPG annotated intron")+
+  geom_abline(slope = 1)
+```
 Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
 
 When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 

@@ -77,7 +77,7 @@ junction_df_test <- combined_junctions %>% mutate(start = amb_start + 1, end = a
          averaged_fiveSS_threeSS_unspliced_reads = (fiveSS_unspliced_reads + threeSS_unspliced_reads) / 2,
          spliced_to_unspliced_ratio = COMPASS_counts / averaged_fiveSS_threeSS_unspliced_reads ,
   ) %>% 
-  select(-X1, -index, -amb_start, -amb_stop, -intron_length, -five_SS, -three_SS) %>%
+  select(-index, -amb_start, -amb_stop, -intron_length, -five_SS, -three_SS) %>%
   relocate(intron_ID, annotated_junction, chrom, seqnames, start, end, RNA_strand:intron_size, poly_U_count:DS_3SS_10nt, fiveSS_seq, threeSS_seq, fiveSS_type:hamming_dist_DS_junction, five_SS_2nt: branchpoint_consensus_hamming_dist,
            sample_name:threeSS_unspliced_reads, COMPASS_counts:median_alignment_score, upstream_5SS, downstream_5SS, upstream_3SS, downstream_3SS, ) #%>%
   #left_join(sample_key)
