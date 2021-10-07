@@ -96,4 +96,18 @@ remove_short_0wt <- subset(remove_short_0wt, remove_short_0wt$WT_rrp6_mean_hisat
 remove_short_0wt[is.na(remove_short_0wt$wt_to_u_r_spliced_unspliced), "wt_to_u_r_spliced_unspliced"] <- 0
 
 ```
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r}
+full_list$V2 <- as.numeric(full_list$V2)
+full_list$V3 <- as.numeric(full_list$V3)
+
+NA_removed <- subset(full_list, !(is.na(full_list$V1)))
+
+for (i in 1:nrow(NA_removed)){
+  coordinates <- paste("chr",NA_removed[i,"V1"],":",(NA_removed[i,"V2"]-500),"-",(NA_removed[i,"V3"]+500), sep = "")
+  NA_removed[i,"coordinates"] <- coordinates
+}
+
+write.table(NA_removed$coordinates, file = "./coordinates.txt", quote = FALSE, row.names = FALSE ,col.names = FALSE)
+```
+
